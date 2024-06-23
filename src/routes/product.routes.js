@@ -25,8 +25,39 @@ router.get("/:id", async (req, res) => {
     }
 })
 
-router.patch("/:id", (req, res) => {
-    res.send("updating a product")
+router.patch("/:id", async (req, res) => {
+    const {productthumbnail, producttitle, productdescription, productcost,onoffer} = req.body;
+    const id = req.params.id;
+    try {
+        let productUpdate;
+        if (productthumbnail) {
+            productUpdate = await pool.query("UPDATE products_v2 SET productThumbnail=$1 WHERE id=$2", [productthumbnail , id])
+        }
+
+        if (producttitle) {
+            productUpdate = await pool.query("UPDATE products_v2 SET productTitle=$1 WHERE id=$2", [producttitle , id])
+        }
+
+        if (productdescription) {
+            productUpdate = await pool.query("UPDATE products_v2 SET productDescription=$1 WHERE id=$2", [productdescription , id])
+        }
+
+        if (productcost) {
+            productUpdate = await pool.query("UPDATE products_v2 SET productCost=$1 WHERE id=$2", [productcost , id])
+        }
+
+        if (onoffer) {
+            productUpdate = await pool.query("UPDATE products_v2 SET onoffer=$1 WHERE id=$2", [onoffer , id])
+        }
+        if (productUpdate.rowCount === 1){
+            res.status(200).json({success:true, message:"product updated successfuly"})
+        }else {
+            res.status(400).json({success:false, message:"invalid product id"})
+        }
+        res.json(productUpdate);
+    } catch (error) {
+        res.status(500).json({success: false, message:error.message})
+    }
 })
 
 router.post("", async (req, res) => {
@@ -63,3 +94,5 @@ router.delete("/:id", async (req, res) => {
 })
 
 export default router;
+
+
