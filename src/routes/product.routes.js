@@ -29,8 +29,23 @@ router.patch("/:id", (req, res) => {
     res.send("updating a product")
 })
 
-router.post("", (req, res) => {
-    res.send("creating a product")
+router.post("", async (req, res) => {
+    try {
+        const productthumbnail = req.body.productthumbnail;
+        const producttitle = req.body.producttitle;
+        const productdescription = req.body.productdescription;
+        const productcost = req.body.productcost;
+        const onoffer = req.body.onoffer;
+
+        const insert = await pool.query("INSERT INTO products_v2 (productThumbnail, productTitle, productDescription, productCost, onOffer) VALUES ($1, $2, $3, $4, $5)", [productthumbnail,producttitle,productdescription,productcost,onoffer]);
+        if (insert.rowCount === 1){
+            res.status(201).json({success:true, message:"product created successfully"})
+        }
+
+
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
 })
 
 router.delete("/:id", (req, res) => {
