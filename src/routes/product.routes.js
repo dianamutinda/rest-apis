@@ -48,8 +48,18 @@ router.post("", async (req, res) => {
     }
 })
 
-router.delete("/:id", (req, res) => {
-    res.send("deleting a product")
+router.delete("/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+        const prodDelete = await pool.query("DELETE FROM products_v2 WHERE id=$1", [id]);
+        if (prodDelete.rowCount === 1){
+            res.status(200).json({success: true, message:"product deleted successfully"})
+        }else {
+            res.status(400).json({success:false, message:"invalid product id"})
+        }
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
 })
 
 export default router;
